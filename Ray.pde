@@ -1,3 +1,5 @@
+import java.util.List;
+
 public class Ray
 {
   //each ray begins at (0, 0, 0), and has a normalized "direction".
@@ -10,6 +12,26 @@ public class Ray
   {
     this.origin = new PVector(0, 0, 0);
     this.direction = direction.normalize();
+  }
+  
+  public Hit castRay(List<Sphere> spheres)
+  {
+    Hit closestHit = null;
+    
+    for(Sphere sphere: spheres)
+    {
+      Hit hit = intersectsWith(sphere);
+      
+      if(hit != null)
+      {
+        if(closestHit == null || hit.getRayT() < closestHit.getRayT())
+        {
+          closestHit = hit;
+        }
+      }
+    }
+    
+    return closestHit;
   }
   
   /**

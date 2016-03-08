@@ -10,4 +10,9 @@ public class Hit
     this.object = object;
     this.rayT = rayT;
   }
+  
+  public float getRayT()
+  {
+    return rayT;
+  }
 }
