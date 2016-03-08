@@ -18,4 +18,10 @@ public class Sphere
   {
     return radius;
   }
+  
+  @Override
+  public String toString()
+  {
+    return String.format("Sphere at (%.2f, %.2f, %.2f) -- Radius: %.2f", center.x, center.y, center.z, radius);
+  }
 }

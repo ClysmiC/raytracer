@@ -59,6 +59,8 @@ void interpreter()
   if (str == null) println("Error! Failed to read the file.");
   
   backgroundColor = color(0, 0, 0);
+  spheres.clear();
+  lights.clear();
   
   for (int i=0; i<str.length; i++)
   {
@@ -146,10 +148,7 @@ void interpreter()
 
 // This is where you should put your code for creating
 // eye rays and tracing them.
-void draw_scene() {
-  clear();
-  background(backgroundColor);
-  
+void draw_scene() {  
   float fovRad = (float)Math.toRadians(fov);
   
   float l = (float)Math.tan(fovRad/2f) * -1;
@@ -162,23 +161,30 @@ void draw_scene() {
   for(int y = 0; y < height; y++)
   {
     for(int x = 0; x < width; x++)
-    {
+    {      
       float xRange = r - l;
       float yRange = t - b;
       
-      float rayX = x + xRange * (x / xRange);
-      float rayY = y + yRange * (y / yRange);
+      float rayX = l + xRange * (x / (float)width);
+      float rayY = b + yRange * (y / (float)height);
       float rayZ = -1;
       
       Ray ray = new Ray(new PVector(rayX, rayY, rayZ)); //constructor handles normalization
       Hit hit = ray.castRay(spheres);
       
+      //System.out.println(ray);
+      
       if(hit != null)
       {
         //set the pixel color
-        fill (0, 0, 0);     // you should put the correct pixel color here
-        rect (x, y, 1, 1);  // make a tiny rectangle to fill the pixel 
+        fill (1, 1, 1);     // you should put the correct pixel color here
       }
+      else
+      {
+        fill(backgroundColor);
+      }
+      
+      rect (x, height - y, 1, 1);  // make a tiny rectangle to fill the pixel-- have to subtract from height to "flip" image 
     }
   }
 }

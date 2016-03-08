@@ -45,19 +45,26 @@ public class Ray
     PVector sphereCenter = sphere.getCenter();
     float radius = sphere.getRadius();
     
-    float discriminant = (float)Math.pow(direction.dot(origin.sub(sphereCenter)), 2) -
-        (direction.dot(direction) * (origin.sub(sphereCenter).dot(origin.sub(sphereCenter)) - radius * radius));
+    float discriminant = (float)Math.pow(PVector.dot(direction, PVector.sub(origin, sphereCenter)), 2) -
+        (PVector.dot(direction, direction) * (PVector.dot(PVector.sub(origin, sphereCenter), PVector.sub(origin, sphereCenter)) - radius * radius));
     
     if(discriminant < 0)
     {
       return null;
     }
     
-    float t1 = (float)(direction.mult(-1).dot(origin.sub(sphereCenter)) + Math.sqrt(discriminant)) / (direction.dot(direction));
-    float t2 = (float)(direction.mult(-1).dot(origin.sub(sphereCenter)) - Math.sqrt(discriminant)) / (direction.dot(direction));
+    float t1 = (float)(PVector.dot(PVector.mult(direction,-1), PVector.sub(origin, sphereCenter)) + Math.sqrt(discriminant)) / (PVector.dot(direction, direction));
+    float t2 = (float)(PVector.dot(PVector.mult(direction,-1), PVector.sub(origin, sphereCenter)) - Math.sqrt(discriminant)) / (PVector.dot(direction, direction));
     
     float t = Math.min(t1, t2);
     
-    return new Hit(origin.add(direction.mult(t)), sphere, t);
+    return new Hit(PVector.add(origin, PVector.mult(direction, t)), sphere, t);
+  }
+  
+  @Override
+  public String toString()
+  {
+    return String.format("Ray from (%.2f, %.2f, %.2f) to (%.2f, %.2f, %.2f)",
+      origin.x, origin.y, origin.z, direction.x, direction.y, direction.z);
   }
 }
