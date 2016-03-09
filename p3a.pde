@@ -108,6 +108,7 @@ void interpreter()
       float K =get_float(token[11]);
       
       currentSurface = new Surface(Cdr, Cdg, Cdb, Car, Cag, Cab, Csr, Csg, Csb, P, K);
+      System.out.println(currentSurface);
     }    
     else if (token[0].equals("sphere"))
     {
@@ -180,7 +181,7 @@ void draw_scene() {
       if(hit != null)
       {
         //set the pixel color
-        hit.applyLights(lights);
+        hit.applyLights(lights); //<>//
         fill(hit.getColor());     // you should put the correct pixel color here
       }
       else

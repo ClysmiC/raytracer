@@ -29,11 +29,18 @@ public class Surface
   
   public float getDiffuseG()
   {
-    return diffuseR;
+    return diffuseG;
   }
   
   public float getDiffuseB()
   {
-    return diffuseR;
+    return diffuseB;
+  }
+  
+  @Override
+  public String toString()
+  {
+    return String.format("Diffuse: (%.2f, %.2f, %.2f)\nAmbient: (%.2f, %.2f, %.2f)\nSpecular: (%.2f, %.2f, %.2f)\nP: %.2f\nReflectivity: %.2f",
+                            diffuseR, diffuseG, diffuseB, ambientR, ambientG, ambientB, specularR, specularG, specularB, phongExp, reflectivity);
   }
 }
