@@ -34,6 +34,7 @@ public class Hit
    */
   public void applyLights(List<Light> lights)
   {
+    Surface surface = object.getSurface();
     PVector n = PVector.sub(hitPoint, object.getCenter()).normalize();
     
     float rTotal = 0;
@@ -46,9 +47,9 @@ public class Hit
       float nDotL = PVector.dot(n, l);
       nDotL = Math.max(0, nDotL);
       
-      float r = light.getRed() * nDotL;
-      float g = light.getGreen() * nDotL;
-      float b = light.getBlue() * nDotL;
+      float r = surface.getDiffuseR() * light.getRed() * nDotL;
+      float g = surface.getDiffuseG() * light.getGreen() * nDotL;
+      float b = surface.getDiffuseB() * light.getBlue() * nDotL;
       
       rTotal += r;
       gTotal += g;

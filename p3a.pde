@@ -17,6 +17,7 @@ private List<Light> lights;
 
 private float fov;
 private int backgroundColor;
+private Surface currentSurface;
 
 void setup() {
   size(500, 500);  
@@ -59,6 +60,8 @@ void interpreter()
   if (str == null) println("Error! Failed to read the file.");
   
   backgroundColor = color(0, 0, 0);
+  currentSurface = new Surface(1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0); //pure white, no reflectivity
+  
   spheres.clear();
   lights.clear();
   
@@ -103,6 +106,8 @@ void interpreter()
       float Csb =get_float(token[9]);
       float P =get_float(token[10]);
       float K =get_float(token[11]);
+      
+      currentSurface = new Surface(Cdr, Cdg, Cdb, Car, Cag, Cab, Csr, Csg, Csb, P, K);
     }    
     else if (token[0].equals("sphere"))
     {
@@ -111,7 +116,7 @@ void interpreter()
       float y =get_float(token[3]);
       float z =get_float(token[4]);
       
-      spheres.add(new Sphere(new PVector(x, y, z), r));
+      spheres.add(new Sphere(new PVector(x, y, z), r, currentSurface));
     }
     else if (token[0].equals("begin"))
     {

@@ -2,11 +2,13 @@ public class Sphere
 {
   private PVector center;
   private float radius;
+  private Surface surface;
   
-  public Sphere(PVector center, float radius)
+  public Sphere(PVector center, float radius, Surface surface)
   {
     this.center = center;
     this.radius = radius;
+    this.surface = surface;
   }
   
   public PVector getCenter()
@@ -17,6 +19,11 @@ public class Sphere
   public float getRadius()
   {
     return radius;
+  }
+  
+  public Surface getSurface()
+  {
+    return surface;
   }
   
   @Override
