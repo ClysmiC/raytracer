@@ -12,4 +12,24 @@ public class Light
     this.green = green;
     this.blue = blue;
   }
+  
+  public PVector getLocation()
+  {
+    return location;
+  }
+  
+  public float getRed()
+  {
+    return red;
+  }
+  
+  public float getGreen()
+  {
+    return green;
+  }
+  
+  public float getBlue()
+  {
+    return blue;
+  }
 }

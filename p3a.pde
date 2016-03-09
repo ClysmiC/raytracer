@@ -172,12 +172,11 @@ void draw_scene() {
       Ray ray = new Ray(new PVector(rayX, rayY, rayZ)); //constructor handles normalization
       Hit hit = ray.castRay(spheres);
       
-      //System.out.println(ray);
-      
       if(hit != null)
       {
         //set the pixel color
-        fill (1, 1, 1);     // you should put the correct pixel color here
+        hit.applyLights(lights);
+        fill(hit.getColor());     // you should put the correct pixel color here
       }
       else
       {
