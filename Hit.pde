@@ -2,10 +2,10 @@ public class Hit
 {
   private float rayT; //the "t" value on the ray that results in this hit
   private PVector hitPoint;
-  private Sphere object;
+  private SceneObject object;
   private int myColor;
   
-  public Hit(PVector hitPoint, Sphere object, float rayT)
+  public Hit(PVector hitPoint, SceneObject object, float rayT)
   {
     this.hitPoint = hitPoint;
     this.object = object;
@@ -23,7 +23,7 @@ public class Hit
     return hitPoint;
   }
   
-  public Sphere getObject()
+  public SceneObject getObject()
   {
     return object;
   }
@@ -35,11 +35,37 @@ public class Hit
   public void applyLights(List<Light> lights)
   {
     Surface surface = object.getSurface();
-    PVector n = PVector.sub(hitPoint, object.getCenter()).normalize();
     
-    float rTotal = 0;
-    float gTotal = 0;
-    float bTotal = 0;
+    PVector n = null;
+    
+    if(object instanceof Sphere)
+    {
+      n = PVector.sub(hitPoint, ((Sphere)object).getCenter()).normalize();
+    }
+    else if (object instanceof Triangle)
+    {
+      Triangle triangle = (Triangle)object;
+      PVector edge1 = PVector.sub(triangle.getP1(), triangle.getP2());
+      PVector edge2 = PVector.sub(triangle.getP1(), triangle.getP3());
+      n = edge1.cross(edge2);
+      n.normalize();
+      
+      //if normal is pointing away from us, flip it! (we are looking down negative Z axis)
+      if(n.z <= 0)
+      {
+        n = PVector.sub(new PVector(0, 0, 0), n);
+      }
+    }
+    else
+    {
+      System.out.println("Unsupported scene object");
+    }
+    
+    PVector e = new PVector(0, 0, 0); //our ray tracer casts rays from (0, 0, 0)
+    
+    float rTotal = surface.getAmbientR();
+    float gTotal = surface.getAmbientG();
+    float bTotal = surface.getAmbientB();
     
     for(Light light: lights)
     {
@@ -47,9 +73,12 @@ public class Hit
       float nDotL = PVector.dot(n, l);
       nDotL = Math.max(0, nDotL);
       
-      float r = surface.getDiffuseR() * light.getRed() * nDotL;
-      float g = surface.getDiffuseG() * light.getGreen() * nDotL;
-      float b = surface.getDiffuseB() * light.getBlue() * nDotL;
+      PVector h = PVector.div(PVector.add(e, l), PVector.add(e, l).mag());
+      float cPhong = (float)Math.pow(PVector.dot(h, n), surface.getPhongExp());
+      
+      float r = surface.getDiffuseR() * light.getRed() * nDotL + cPhong * surface.getSpecularR() * light.getRed();;
+      float g = surface.getDiffuseG() * light.getGreen() * nDotL + cPhong * surface.getSpecularG() * light.getGreen();;
+      float b = surface.getDiffuseB() * light.getBlue() * nDotL + cPhong * surface.getSpecularB() * light.getBlue();;
       
       rTotal += r;
       gTotal += g;

@@ -12,12 +12,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 private String gCurrentFile = new String("i0.cli");
-private List<Sphere> spheres;
+private List<SceneObject> objects;
 private List<Light> lights;
 
 private float fov;
 private int backgroundColor;
 private Surface currentSurface;
+
+private int currentVertex = 0;
+private PVector[] triVertices;
 
 void setup() {
   size(500, 500);  
@@ -25,8 +28,10 @@ void setup() {
   colorMode(RGB, 1.0);
   background(0, 0, 0);
   
-  spheres = new ArrayList();
+  objects = new ArrayList();
   lights = new ArrayList();
+  
+  triVertices = new PVector[3];
   
   interpreter();
 }
@@ -62,7 +67,7 @@ void interpreter()
   backgroundColor = color(0, 0, 0);
   currentSurface = new Surface(1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0); //pure white, no reflectivity
   
-  spheres.clear();
+  objects.clear();
   lights.clear();
   
   for (int i=0; i<str.length; i++)
@@ -108,7 +113,6 @@ void interpreter()
       float K =get_float(token[11]);
       
       currentSurface = new Surface(Cdr, Cdg, Cdb, Car, Cag, Cab, Csr, Csg, Csb, P, K);
-      System.out.println(currentSurface);
     }    
     else if (token[0].equals("sphere"))
     {
@@ -117,21 +121,39 @@ void interpreter()
       float y =get_float(token[3]);
       float z =get_float(token[4]);
       
-      spheres.add(new Sphere(new PVector(x, y, z), r, currentSurface));
+      objects.add(new Sphere(new PVector(x, y, z), r, currentSurface));
     }
     else if (token[0].equals("begin"))
     {
-
+      currentVertex = 0;
     }
     else if (token[0].equals("vertex"))
     {
-      float x =get_float(token[1]);
-      float y =get_float(token[2]);
-      float z =get_float(token[3]);
+      float x = get_float(token[1]);
+      float y = get_float(token[2]);
+      float z = get_float(token[3]);
+      
+      triVertices[currentVertex] = new PVector(x, y, z);
+      
+      if(currentVertex == 2)
+      {
+        Triangle triangle = new Triangle(triVertices[0], triVertices[1], triVertices[2], currentSurface);
+        objects.add(triangle);
+        
+        System.out.println(triangle);
+        
+        //reset to 0 as a defense mechanism. In reality, for this project vertex commands will
+        //always be in sets of 3 (triangles)
+        currentVertex = 0;
+      }
+      else
+      {
+        currentVertex++;
+      }
     }
     else if (token[0].equals("end"))
     {
-
+      currentVertex = 0;
     }
     else if (token[0].equals("rect"))
     {
@@ -176,7 +198,7 @@ void draw_scene() {
       float rayZ = -1;
       
       Ray ray = new Ray(new PVector(rayX, rayY, rayZ)); //constructor handles normalization
-      Hit hit = ray.castRay(spheres);
+      Hit hit = ray.castRay(objects);
       
       if(hit != null)
       {

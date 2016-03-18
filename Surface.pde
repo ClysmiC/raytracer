@@ -37,6 +37,41 @@ public class Surface
     return diffuseB;
   }
   
+  public float getAmbientR()
+  {
+    return ambientR;
+  }
+  
+  public float getAmbientG()
+  {
+    return ambientG;
+  }
+  
+  public float getAmbientB()
+  {
+    return ambientB;
+  }
+  
+  public float getSpecularR()
+  {
+    return specularR;
+  }
+  
+  public float getSpecularG()
+  {
+    return specularG;
+  }
+  
+  public float getSpecularB()
+  {
+    return specularB;
+  }
+  
+  public float getPhongExp()
+  {
+    return phongExp;
+  }
+  
   @Override
   public String toString()
   {

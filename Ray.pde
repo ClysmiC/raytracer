@@ -14,13 +14,26 @@ public class Ray
     this.direction = direction.normalize();
   }
   
-  public Hit castRay(List<Sphere> spheres)
+  public Hit castRay(List<SceneObject> objects)
   {
     Hit closestHit = null;
     
-    for(Sphere sphere: spheres)
+    for(SceneObject object: objects)
     {
-      Hit hit = intersectsWith(sphere);
+      Hit hit = null;
+      
+      if(object instanceof Sphere)
+      {
+        hit = intersectsWith((Sphere)object);
+      } 
+      else if(object instanceof Triangle)
+      {
+        hit = intersectsWith((Triangle)object);
+      } 
+      else
+      {
+        System.out.println("Error: Object must be either a sphere or a triangle.");
+      }
       
       if(hit != null)
       {
@@ -59,6 +72,43 @@ public class Ray
     float t = Math.min(t1, t2);
     
     return new Hit(PVector.add(origin, PVector.mult(direction, t)), sphere, t);
+  }
+  
+  public Hit intersectsWith(Triangle triangle)
+  {
+    PVector edge1 = PVector.sub(triangle.getP2(), triangle.getP1());
+    PVector edge2 = PVector.sub(triangle.getP3(), triangle.getP1());
+    
+    PVector n = edge1.cross(edge2).normalize();
+    float d = -PVector.dot(n, triangle.getP1());
+    
+    //make sure n isn't perpendicular to the ray
+    if(PVector.dot(n, direction) < .0001)
+    {
+      return null;
+    }
+    
+    //t is where the ray intersects the plane
+    float t = -(PVector.dot(n, origin) + d) / PVector.dot(n, direction);
+    PVector intersectPoint = PVector.add(origin, PVector.mult(direction, t));
+    
+    
+    //use Barycentric coordinates to check if within triangle
+    PVector ap = PVector.sub(intersectPoint, triangle.getP1());
+    PVector ab = PVector.sub(triangle.getP2(), triangle.getP1());
+    PVector ac = PVector.sub(triangle.getP3(), triangle.getP1());
+    
+    float invDenom = ((PVector.dot(ac, ac) * PVector.dot(ab, ab)) - (PVector.dot(ac, ab) * PVector.dot(ac, ab))); 
+    
+    float u = ((PVector.dot(ab, ab) * PVector.dot(ap, ac)) - (PVector.dot(ab, ac) * PVector.dot(ap, ab))) / invDenom;
+    float v = ((PVector.dot(ac, ac) * PVector.dot(ap, ab)) - (PVector.dot(ac, ab) * PVector.dot(ap, ac))) / invDenom;
+    
+    if(u < 0 || v < 0 || u + v > 1.0001) //give a LIIITTLE extra room due to float weirdness (prevents edges from failing detection)
+    {
+      return null;
+    }
+    
+    return new Hit(intersectPoint, triangle, t);
   }
   
   @Override

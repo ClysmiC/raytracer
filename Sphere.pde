@@ -1,8 +1,7 @@
-public class Sphere
+public class Sphere extends SceneObject
 {
   private PVector center;
   private float radius;
-  private Surface surface;
   
   public Sphere(PVector center, float radius, Surface surface)
   {
@@ -19,11 +18,6 @@ public class Sphere
   public float getRadius()
   {
     return radius;
-  }
-  
-  public Surface getSurface()
-  {
-    return surface;
   }
   
   @Override
