@@ -141,8 +141,6 @@ void interpreter()
         Triangle triangle = new Triangle(triVertices[0], triVertices[1], triVertices[2], currentSurface);
         objects.add(triangle);
         
-        System.out.println(triangle);
-        
         //reset to 0 as a defense mechanism. In reality, for this project vertex commands will
         //always be in sets of 3 (triangles)
         currentVertex = 0;
@@ -198,13 +196,13 @@ void draw_scene() {
       float rayY = b + yRange * (y / (float)height);
       float rayZ = -1;
       
-      Ray ray = new Ray(new PVector(rayX, rayY, rayZ)); //constructor handles normalization
+      Ray ray = new Ray(new PVector(0, 0, 0), new PVector(rayX, rayY, rayZ)); //constructor handles normalization
       Hit hit = ray.castRay(objects);
       
       if(hit != null)
-      {
+      {         //<>// //<>// //<>//
         //set the pixel color
-        hit.applyLights(lights); //<>//
+        hit.applyLights(lights, objects);
         fill(hit.getColor());     // you should put the correct pixel color here
       }
       else

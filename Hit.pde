@@ -32,15 +32,15 @@ public class Hit
    * Updates myColor based on the lights in the scene.
    * Call this before getColor() to get an accurate color.
    */
-  public void applyLights(List<Light> lights)
+  public void applyLights(List<Light> lights, List<SceneObject> objects)
   {
-    Surface surface = object.getSurface();
+    Surface surface = object.getSurface(); //<>//
     
     PVector n = null;
     
     if(object instanceof Sphere)
     {
-      n = PVector.sub(hitPoint, ((Sphere)object).getCenter()).normalize();
+      n = PVector.sub(hitPoint, ((Sphere)object).getCenter()).normalize(); //<>//
     }
     else if (object instanceof Triangle)
     {
@@ -70,15 +70,60 @@ public class Hit
     for(Light light: lights)
     {
       PVector l = PVector.sub(light.getLocation(), hitPoint).normalize();
+      //cast ray to see if shadow
+      
+      PVector tinyOffset = PVector.mult(l, .001); // add this tiny vector to the hitpoint to make sure it doesn't "hit" itself when it casts a ray
+      Ray toLight = new Ray(PVector.add(hitPoint, tinyOffset), l);
+      
+      float expectedT;
+      
+      if(Math.abs(light.getLocation().x - hitPoint.x) > 0.0001)
+      {
+        expectedT = (light.getLocation().x - hitPoint.x) / toLight.getDirection().x;
+      }
+      else if(Math.abs(light.getLocation().y - hitPoint.y) > 0.0001)
+      {
+        expectedT = (light.getLocation().y - hitPoint.y) / toLight.getDirection().y;
+      }
+      else if(Math.abs(light.getLocation().z - hitPoint.z) > 0.0001)
+      {
+        expectedT = (light.getLocation().z - hitPoint.z) / toLight.getDirection().z;
+      }
+      else
+      {
+        //light has same coordinates as object... edge case, shouldn't happen
+        expectedT = 0;
+      }
+      
+      Hit hit = toLight.castRay(objects);
+      
+      int includeThisLight = 1;
+      
+      if(hit != null)
+      {
+        //ray hit something. if it is less than our expected T, it is an object
+        //in the way of the 
+        if(hit.getRayT() + .0001 < expectedT)
+        {
+          includeThisLight = 0;
+        }
+      }
+      
+      //null hit means ray never hit an object, so it reached light just fine
+      
       float nDotL = PVector.dot(n, l);
       nDotL = Math.max(0, nDotL);
       
       PVector h = PVector.div(PVector.add(e, l), PVector.add(e, l).mag());
       float cPhong = (float)Math.pow(PVector.dot(h, n), surface.getPhongExp());
       
-      float r = surface.getDiffuseR() * light.getRed() * nDotL + cPhong * surface.getSpecularR() * light.getRed();;
-      float g = surface.getDiffuseG() * light.getGreen() * nDotL + cPhong * surface.getSpecularG() * light.getGreen();;
-      float b = surface.getDiffuseB() * light.getBlue() * nDotL + cPhong * surface.getSpecularB() * light.getBlue();;
+      float r = surface.getDiffuseR() * light.getRed() * nDotL * includeThisLight +
+                cPhong * surface.getSpecularR() * light.getRed() * includeThisLight;
+                
+      float g = surface.getDiffuseG() * light.getGreen() * nDotL * includeThisLight +
+                cPhong * surface.getSpecularG() * light.getGreen() * includeThisLight;
+      float b = surface.getDiffuseB() * light.getBlue() * nDotL * includeThisLight +
+                cPhong * surface.getSpecularB() * light.getBlue() * includeThisLight;
       
       rTotal += r;
       gTotal += g;

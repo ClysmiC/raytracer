@@ -8,9 +8,9 @@ public class Ray
   private PVector origin;
   private PVector direction;
   
-  public Ray(PVector direction)
+  public Ray(PVector origin, PVector direction)
   {
-    this.origin = new PVector(0, 0, 0);
+    this.origin = origin;
     this.direction = direction.normalize();
   }
   
@@ -69,6 +69,16 @@ public class Ray
     float t1 = (float)(PVector.dot(PVector.mult(direction,-1), PVector.sub(origin, sphereCenter)) + Math.sqrt(discriminant)) / (PVector.dot(direction, direction));
     float t2 = (float)(PVector.dot(PVector.mult(direction,-1), PVector.sub(origin, sphereCenter)) - Math.sqrt(discriminant)) / (PVector.dot(direction, direction));
     
+    if(t1 < 0)
+    {
+      t1 = Float.MAX_VALUE;
+    }
+    
+    if(t2 < 0)
+    {
+      t2 = Float.MAX_VALUE;
+    }
+    
     float t = Math.min(t1, t2);
     
     return new Hit(PVector.add(origin, PVector.mult(direction, t)), sphere, t);
@@ -90,6 +100,10 @@ public class Ray
     
     //t is where the ray intersects the plane
     float t = -(PVector.dot(n, origin) + d) / PVector.dot(n, direction);
+    
+    if(t < 0)
+      return null;
+      
     PVector intersectPoint = PVector.add(origin, PVector.mult(direction, t));
     
     
@@ -109,6 +123,11 @@ public class Ray
     }
     
     return new Hit(intersectPoint, triangle, t);
+  }
+  
+  public PVector getDirection()
+  {
+    return direction;
   }
   
   @Override
