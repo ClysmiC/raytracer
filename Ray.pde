@@ -103,7 +103,7 @@ public class Ray
     float u = ((PVector.dot(ab, ab) * PVector.dot(ap, ac)) - (PVector.dot(ab, ac) * PVector.dot(ap, ab))) / invDenom;
     float v = ((PVector.dot(ac, ac) * PVector.dot(ap, ab)) - (PVector.dot(ac, ab) * PVector.dot(ap, ac))) / invDenom;
     
-    if(u < 0 || v < 0 || u + v > 1.0001) //give a LIIITTLE extra room due to float weirdness (prevents edges from failing detection)
+    if(u < 0 || v < 0 || u + v > 1.000001) //give a LIIITTLE extra room due to float weirdness (prevents edges from failing detection)
     {
       return null;
     }

@@ -52,6 +52,7 @@ void keyPressed() {
     case '7':  gCurrentFile = new String("i7.cli"); interpreter(); break;
     case '8':  gCurrentFile = new String("i8.cli"); interpreter(); break;
     case '9':  gCurrentFile = new String("i9.cli"); interpreter(); break;
+    case '0':  gCurrentFile = new String("i10.cli"); interpreter(); break;
   }
 }
 
