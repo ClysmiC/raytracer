@@ -67,6 +67,11 @@ public class Surface
     return specularB;
   }
   
+  public float getReflectivity()
+  {
+    return reflectivity;
+  }
+  
   public float getPhongExp()
   {
     return phongExp;

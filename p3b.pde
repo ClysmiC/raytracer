@@ -199,10 +199,15 @@ void draw_scene() {
       Ray ray = new Ray(new PVector(0, 0, 0), new PVector(rayX, rayY, rayZ)); //constructor handles normalization
       Hit hit = ray.castRay(objects);
       
+      if(x == 0 && y == height - 1)
+      {
+        System.out.println("breakpoint"); //<>//
+      }
+      
       if(hit != null)
-      {         //<>// //<>// //<>//
+      {         //<>// //<>//
         //set the pixel color
-        hit.applyLights(lights, objects);
+        hit.calculateColor(lights, objects, ray, backgroundColor, 0);
         fill(hit.getColor());     // you should put the correct pixel color here
       }
       else

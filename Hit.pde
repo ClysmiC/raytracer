@@ -32,12 +32,13 @@ public class Hit
    * Updates myColor based on the lights in the scene.
    * Call this before getColor() to get an accurate color.
    */
-  public void applyLights(List<Light> lights, List<SceneObject> objects)
+  public void calculateColor(List<Light> lights, List<SceneObject> objects, Ray incomingRay, int backgroundColor, int recursiveDepth)
   {
     Surface surface = object.getSurface(); //<>//
     
     PVector n = null;
     
+    //calculate normal
     if(object instanceof Sphere)
     {
       n = PVector.sub(hitPoint, ((Sphere)object).getCenter()).normalize(); //<>//
@@ -61,12 +62,13 @@ public class Hit
       System.out.println("Unsupported scene object");
     }
     
-    PVector e = new PVector(0, 0, 0); //our ray tracer casts rays from (0, 0, 0)
+    PVector e = incomingRay.getOrigin();
     
     float rTotal = surface.getAmbientR();
     float gTotal = surface.getAmbientG();
     float bTotal = surface.getAmbientB();
     
+    //calculate lighting/shading
     for(Light light: lights)
     {
       PVector l = PVector.sub(light.getLocation(), hitPoint).normalize();
@@ -129,6 +131,33 @@ public class Hit
       gTotal += g;
       bTotal += b;
     }
+    
+    //calculate reflection
+    float reflectivity = object.getSurface().getReflectivity();
+    
+    if(reflectivity > 0 && recursiveDepth < 10)
+    {
+      PVector reflectedVector = PVector.sub(incomingRay.getDirection(), PVector.mult(n, 2 * PVector.dot(incomingRay.getDirection(), n)));
+      reflectedVector.normalize();
+      
+      PVector tinyOffset = PVector.mult(reflectedVector, .001); // add this tiny vector to the hitpoint to make sure it doesn't "hit" itself when it casts a ray
+      Ray reflectedRay = new Ray(PVector.add(hitPoint, tinyOffset), reflectedVector);
+      
+      int reflectColor = backgroundColor;
+     
+      Hit reflectedHit = reflectedRay.castRay(objects);
+      
+      if(reflectedHit != null)
+      {
+        reflectedHit.calculateColor(lights, objects, reflectedRay, backgroundColor, recursiveDepth + 1);
+        reflectColor = reflectedHit.getColor();
+      }
+      
+      rTotal += reflectivity * red(reflectColor);
+      gTotal += reflectivity * green(reflectColor);
+      bTotal += reflectivity * blue(reflectColor);
+    }
+    
     
     rTotal = Math.min(rTotal, 1);
     gTotal = Math.min(gTotal, 1);

@@ -71,12 +71,12 @@ public class Ray
     
     if(t1 < 0)
     {
-      t1 = Float.MAX_VALUE;
+      return null;
     }
     
     if(t2 < 0)
     {
-      t2 = Float.MAX_VALUE;
+      return null;
     }
     
     float t = Math.min(t1, t2);
@@ -123,6 +123,11 @@ public class Ray
     }
     
     return new Hit(intersectPoint, triangle, t);
+  }
+  
+  public PVector getOrigin()
+  {
+    return origin;
   }
   
   public PVector getDirection()
